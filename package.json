@@ -1,0 +1,51 @@
+{
+  "name": "@nubisco/openbridge-wiz-local-platform",
+  "version": "0.1.0",
+  "description": "Control WiZ lights locally over UDP without cloud or broadcast discovery",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "config.schema.json",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "MIT",
+  "author": "José Silva <jose@nubisco.io>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nubisco/openbridge-wiz-local-platform.git"
+  },
+  "keywords": [
+    "openbridge-plugin",
+    "wiz",
+    "wiz-lan",
+    "homekit",
+    "local"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run --passWithNoTests",
+    "lint": "eslint src/ tests/",
+    "types:check": "tsc --noEmit",
+    "format:check": "prettier --check .",
+    "quality:check": "npm test && npm run lint && npm run format:check && npm run types:check"
+  },
+  "peerDependencies": {
+    "hap-nodejs": ">=0.12.0"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.0"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "pluginAlias": "WizLocalPlatform",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "Controls WiZ lights locally over UDP. Every bulb is declared explicitly, so the plugin never depends on broadcast discovery.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "pollIntervalSeconds": {
+        "title": "Poll interval (seconds)",
+        "type": "number",
+        "default": 30,
+        "minimum": 1,
+        "description": "How often each bulb is probed. Lower means state changed elsewhere shows up sooner."
+      },
+      "failuresBeforeOffline": {
+        "title": "Failures before offline",
+        "type": "integer",
+        "default": 3,
+        "minimum": 1,
+        "description": "Consecutive missed probes before a bulb is reported as not responding."
+      },
+      "requestTimeoutMs": {
+        "title": "Request timeout (ms)",
+        "type": "integer",
+        "default": 4000,
+        "minimum": 100
+      },
+      "devices": {
+        "title": "Bulbs",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": { "title": "Name", "type": "string", "required": true },
+            "mac": {
+              "title": "MAC address",
+              "type": "string",
+              "required": true,
+              "description": "As the bulb reports it, for example d8a01145d84e. Separators and case are ignored."
+            },
+            "host": {
+              "title": "Address",
+              "type": "string",
+              "required": true,
+              "description": "The bulb's IP. Give it a DHCP reservation so it does not move."
+            },
+            "kind": {
+              "title": "Type",
+              "type": "string",
+              "default": "rgbtw",
+              "oneOf": [
+                { "title": "Colour + tunable white", "enum": ["rgbtw"] },
+                { "title": "Tunable white", "enum": ["tw"] },
+                { "title": "Dimmable", "enum": ["dimmable"] },
+                { "title": "Socket", "enum": ["socket"] }
+              ]
+            },
+            "pollIntervalSeconds": {
+              "title": "Poll interval override (seconds)",
+              "type": "number",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
