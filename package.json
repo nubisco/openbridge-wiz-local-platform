@@ -88,5 +88,13 @@
   "openbridge": {
     "platform": "WizLocalPlatform",
     "displayName": "WiZ Local Platform"
-  }
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/joseporto"
+  },
+  "bugs": {
+    "url": "https://github.com/nubisco/openbridge-wiz-local-platform/issues"
+  },
+  "homepage": "https://docs.nubisco.io/openbridge-wiz-local-platform/"
 }

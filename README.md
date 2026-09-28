@@ -1,37 +1,49 @@
-# @nubisco/openbridge-wiz-local-platform
+<p align="center">
+  <img src="docs/public/logo.svg" width="120" alt="OpenBridge WiZ Local Platform" />
+</p>
 
-Controls WiZ lights locally over UDP, for [OpenBridge](https://github.com/nubisco/openbridge).
+# OpenBridge WiZ Local Platform
 
-No cloud, no account, and **no broadcast discovery**.
+**Control WiZ lights locally over UDP through [OpenBridge](https://github.com/nubisco/openbridge) and Apple HomeKit.**
 
-## Why this exists
+No cloud, no WiZ account, and no broadcast discovery to lose them behind.
 
-WiZ's own discovery is a UDP broadcast to `255.255.255.255:38899`. Consumer mesh
-access points routinely drop broadcast frames to save airtime, and a TP-Link Deco
-mesh does exactly that: it forwards unicast to that port perfectly well while
-swallowing every broadcast sent to it.
+[![CI](https://github.com/nubisco/openbridge-wiz-local-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/nubisco/openbridge-wiz-local-platform/actions/workflows/ci.yml)
+[![GitHub release](https://img.shields.io/github/v/release/nubisco/openbridge-wiz-local-platform)](https://github.com/nubisco/openbridge-wiz-local-platform/releases)
+[![npm version](https://img.shields.io/npm/v/@nubisco/openbridge-wiz-local-platform)](https://www.npmjs.com/package/@nubisco/openbridge-wiz-local-platform)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20.0.0-339933)](https://www.npmjs.com/package/@nubisco/openbridge-wiz-local-platform)
+[![license](https://img.shields.io/npm/l/@nubisco/openbridge-wiz-local-platform)](LICENSE)
+[![Docs](https://img.shields.io/website?url=https%3A%2F%2Fdocs.nubisco.io%2Fopenbridge-wiz-local-platform%2F&label=docs)](https://docs.nubisco.io/openbridge-wiz-local-platform/)
 
-On such a network a discovery-based plugin cannot recover a bulb that changes
-address. Give the bulbs DHCP reservations, and every one of them disappears the
-moment the new lease takes effect, with no way back short of restoring the old
-addresses.
+## Table of Contents
 
-This plugin takes each bulb's address from configuration, so there is nothing to
-discover and nothing to lose. It also fixes three smaller things that cost real
-debugging time:
+- [Quick Start](#quick-start)
+- [Why not homebridge-wiz-lan?](#why-not-homebridge-wiz-lan)
+- [Features](#features)
+- [Supported Devices](#supported-devices)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [Security](#security)
+- [Support this project](#support-this-project)
+- [License](#license)
 
-- **Names come from config on every start.** Rename a bulb, restart, and it is
-  renamed. Plugins that apply the configured name only when first creating an
-  accessory never rename one restored from cache.
-- **"Not answering" is not the same as "off".** A bulb that has dropped off the
-  network keeps its last known reading, but reports `reachable: false` and
-  answers HomeKit reads with a communication failure, so the tile greys out
-  instead of showing a plausible lie.
-- **State changes are pushed, not waited for.** A light switched at the wall or
-  in the WiZ app reaches HomeKit on the next poll rather than the next time
-  something happens to read the characteristic.
+## Quick Start
 
-## Configuration
+```sh
+npm install -g @nubisco/openbridge-wiz-local-platform
+```
+
+Find a bulb's MAC and confirm it answers:
+
+```sh
+echo -n '{"method":"getPilot","params":{}}' | nc -u -w 2 192.168.1.154 38899
+```
+
+```json
+{ "method": "getPilot", "result": { "mac": "d8a011bcc1f7", "state": true, "dimming": 100, "temp": 2700 } }
+```
+
+Add it to `~/.openbridge/config.json` and restart:
 
 ```json
 {
@@ -39,75 +51,93 @@ debugging time:
   "enabled": true,
   "config": {
     "pollIntervalSeconds": 30,
-    "failuresBeforeOffline": 3,
-    "devices": [
-      { "name": "Fireplace Top", "mac": "d8a011bcba97", "host": "192.168.1.155", "kind": "rgbtw" },
-      { "name": "Fireplace Middle", "mac": "d8a01145dc70", "host": "192.168.1.152", "kind": "rgbtw" },
-      { "name": "Fireplace Bottom", "mac": "d8a011bc31cd", "host": "192.168.1.153", "kind": "rgbtw" },
-      { "name": "Coffee Table", "mac": "d8a01145da5c", "host": "192.168.1.151", "kind": "rgbtw" },
-      { "name": "Piano", "mac": "d8a011bcc1f7", "host": "192.168.1.154", "kind": "rgbtw" }
-    ]
+    "devices": [{ "name": "Piano", "mac": "d8a011bcc1f7", "host": "192.168.1.154", "kind": "rgbtw" }]
   }
 }
 ```
 
-| Field                           | Default        | Meaning                                                   |
-| ------------------------------- | -------------- | --------------------------------------------------------- |
-| `devices[].name`                | required       | What the bulb is called in HomeKit and OpenBridge         |
-| `devices[].mac`                 | required       | As the bulb reports it. Case and separators are ignored   |
-| `devices[].host`                | required       | The bulb's address. Give it a DHCP reservation            |
-| `devices[].kind`                | `rgbtw`        | `rgbtw`, `tw`, `dimmable` or `socket`                     |
-| `devices[].pollIntervalSeconds` | platform value | Per-bulb override                                         |
-| `pollIntervalSeconds`           | `30`           | How often each bulb is probed                             |
-| `failuresBeforeOffline`         | `3`            | Consecutive missed probes before reporting not responding |
-| `requestTimeoutMs`              | `4000`         | How long to wait for one reply                            |
+Give every bulb a DHCP reservation so its address does not move.
 
-`kind` is declared rather than probed on purpose. A probe only sees the channels
-in the bulb's current pilot, so a colour bulb sitting in white mode looks like a
-tunable-white one and would silently lose its colour controls.
+## Why not homebridge-wiz-lan?
 
-### Finding a bulb's MAC and address
+That plugin is good, and this one exists despite that rather than because of any defect in it.
 
-```sh
-echo -n '{"method":"getPilot","params":{}}' | nc -u -w 2 192.168.1.154 38899
-```
+WiZ's discovery is a UDP broadcast to `255.255.255.255:38899`. Consumer mesh access points
+drop broadcast frames to save airtime: a TP-Link Deco mesh answers unicast on that exact
+port in milliseconds while swallowing every broadcast sent to it. The consequence is
+one-way. A bulb that stops answering is marked offline, and recovering it needs
+rediscovery, which is the broadcast that never arrives. Give five bulbs DHCP reservations
+and all five change address at once, and every one becomes permanently invisible.
 
-A reply names the `mac`, and confirms the bulb answers unicast on that address.
+Addresses come from configuration here, so there is nothing to discover and nothing to lose.
 
-## Behaviour worth knowing
+Accessory UUIDs match that plugin's, so migrating keeps each bulb's HomeKit room, scenes
+and automations. See [Migrating](https://docs.nubisco.io/openbridge-wiz-local-platform/migrating).
 
-**Brightness has no zero.** WiZ treats off as `state: false` and will not accept
-a `dimming` below 10. Setting brightness to 0 in HomeKit turns the bulb off, and
-an off bulb reports 0% rather than the 10% it would otherwise return.
+## Features
 
-**Writes are read back.** A bulb clamps values it dislikes, so after every write
-the plugin re-reads and reports what the bulb accepted, not what was asked for.
+- **No discovery dependency.** Every bulb is addressed directly. A mesh that drops
+  broadcast cannot hide your lights.
+- **Honest reachability.** A bulb that stops answering reports `reachable: false` with the
+  reason attached and answers HomeKit with a communication failure, so the tile greys out
+  instead of claiming to be switched off.
+- **Pushed state.** A light switched at the wall or in the WiZ app reaches HomeKit on the
+  next poll, rather than waiting for something to read the characteristic.
+- **Names from configuration.** Rename a bulb, restart, and it is renamed. No cached name
+  outliving the config that set it.
+- **Writes are read back.** A bulb clamps values it dislikes, so what is reported is what
+  the bulb accepted, not what was asked for.
+- **Coalesced requests.** Five characteristics read at once put one datagram on the wire,
+  not five.
 
-**A successful write counts as reachability.** Pressing a button recovers a bulb
-that had been marked offline, rather than making you wait out the poll interval.
+## Supported Devices
 
-**Requests to the same bulb are coalesced.** Five characteristics read at once
-put one datagram on the wire, not five. These radios are the weakest link on the
-network and do not need the extra traffic.
+| `kind`     | HomeKit gets                                        |
+| ---------- | --------------------------------------------------- |
+| `rgbtw`    | On, Brightness, Colour Temperature, Hue, Saturation |
+| `tw`       | On, Brightness, Colour Temperature                  |
+| `dimmable` | On, Brightness                                      |
+| `socket`   | On                                                  |
 
-## Development
+Declared rather than detected: a probe only sees the channels in a bulb's current state, so
+a colour bulb in white mode would otherwise silently lose its colour controls.
+
+Scenes and built-in light effects are readable but not settable.
+
+## Documentation
+
+Full documentation at **[docs.nubisco.io/openbridge-wiz-local-platform](https://docs.nubisco.io/openbridge-wiz-local-platform/)**
+
+- [Introduction](https://docs.nubisco.io/openbridge-wiz-local-platform/introduction)
+- [Installation](https://docs.nubisco.io/openbridge-wiz-local-platform/installation)
+- [Finding your bulbs](https://docs.nubisco.io/openbridge-wiz-local-platform/finding-bulbs)
+- [Configuration](https://docs.nubisco.io/openbridge-wiz-local-platform/configuration)
+- [Migrating from homebridge-wiz-lan](https://docs.nubisco.io/openbridge-wiz-local-platform/migrating)
+- [How it works](https://docs.nubisco.io/openbridge-wiz-local-platform/how-it-works)
+- [Troubleshooting](https://docs.nubisco.io/openbridge-wiz-local-platform/troubleshooting)
+
+## Contributing
+
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```sh
 npm install
-npm test
-npm run build
 npm run quality:check
 ```
 
-## Licence
+## Security
 
-MIT
+Please report vulnerabilities privately rather than in a public issue. See
+[SECURITY.md](SECURITY.md).
 
-## Migrating from homebridge-wiz-lan
+## Support this project
 
-Accessory UUIDs are generated from the bare MAC, exactly as that plugin does, so
-each bulb keeps its HomeKit identity along with its room, scenes and
-automations. Remove the old plugin first: two accessories cannot share a UUID.
+If this plugin helps your OpenBridge setup, consider sponsoring development. Maintaining
+device integrations, testing against real hardware and answering support questions takes
+significant time, and GitHub Sponsors is what makes long-term maintenance sustainable.
 
-Names will change to whatever this plugin's config says, since it applies them
-on every start rather than only at creation.
+- ❤️ [Sponsor via GitHub](https://github.com/sponsors/joseporto)
+
+## License
+
+[MIT](LICENSE) © Nubisco
