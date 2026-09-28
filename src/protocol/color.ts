@@ -17,9 +17,11 @@ export function hsToRgb(hue: number, saturation: number): Rgb {
   const x = c * (1 - Math.abs(((h / 60) % 2) - 1))
   const m = 1 - c
 
-  let r = 0
-  let g = 0
-  let b = 0
+  // No initialisers: the chain below is exhaustive, so any value here would be
+  // dead and eslint's no-useless-assignment is right to say so.
+  let r: number
+  let g: number
+  let b: number
   if (h < 60) [r, g, b] = [c, x, 0]
   else if (h < 120) [r, g, b] = [x, c, 0]
   else if (h < 180) [r, g, b] = [0, c, x]

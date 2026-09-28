@@ -1,0 +1,52 @@
+name: Release
+
+# semantic-release decides the version from the commit history, publishes to
+# npm and cuts the GitHub release.
+#
+# This cannot publish until the package exists on npm and a trusted publisher
+# is configured for it, because npm will not accept an OIDC publish for a name
+# it has never seen. The first release is therefore done by hand, once. See
+# docs/contributing.md.
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [master]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write # trusted publishing (OIDC) and provenance
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm >= 11.5.1; the npm bundled with Node 22 is older.
+      - name: Pin npm
+        run: npm install -g npm@latest
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+        run: npx semantic-release

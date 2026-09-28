@@ -9,7 +9,6 @@ const PLUGIN_NAME = '@nubisco/openbridge-wiz-local-platform'
 
 let PLUGIN_VERSION = '0.1.0'
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   PLUGIN_VERSION = require('../package.json').version
 } catch {
   /* keep the default */

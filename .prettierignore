@@ -1,5 +1,7 @@
-CHANGELOG.md
 dist/
+coverage/
+node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
-node_modules/
+CHANGELOG.md
+package-lock.json

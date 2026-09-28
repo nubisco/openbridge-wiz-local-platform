@@ -2,3 +2,5 @@ node_modules/
 dist/
 coverage/
 *.log
+docs/.vitepress/dist/
+docs/.vitepress/cache/
