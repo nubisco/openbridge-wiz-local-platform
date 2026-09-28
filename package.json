@@ -13,7 +13,7 @@
     "node": ">=20.0.0"
   },
   "license": "MIT",
-  "author": "José Silva <jose@nubisco.io>",
+  "author": "Jos\u00e9 Silva <jose@nubisco.io>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nubisco/openbridge-wiz-local-platform.git"
@@ -84,5 +84,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "openbridge": {
+    "platform": "WizLocalPlatform",
+    "displayName": "WiZ Local Platform"
   }
 }
