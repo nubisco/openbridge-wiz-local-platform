@@ -102,3 +102,12 @@ npm run quality:check
 ## Licence
 
 MIT
+
+## Migrating from homebridge-wiz-lan
+
+Accessory UUIDs are generated from the bare MAC, exactly as that plugin does, so
+each bulb keeps its HomeKit identity along with its room, scenes and
+automations. Remove the old plugin first: two accessories cannot share a UUID.
+
+Names will change to whatever this plugin's config says, since it applies them
+on every start rather than only at creation.

@@ -15,7 +15,13 @@ export function buildWizAccessory(hap: any, device: WizDevice, pluginVersion: st
   const { Accessory, Service, Characteristic, uuid, Categories } = hap
   const cfg = device.config
 
-  const accessory = new Accessory(cfg.name, uuid.generate(device.id))
+  // Generated from the bare MAC, deliberately matching what homebridge-wiz-lan
+  // does (`uuid.generate(device.mac)`). HomeKit identifies an accessory by its
+  // UUID, so keeping it identical means replacing that plugin with this one
+  // preserves each bulb's room, scenes and automations. Generating from
+  // anything else, the plugin's own device id included, would present five
+  // brand new accessories and quietly discard all of it.
+  const accessory = new Accessory(cfg.name, uuid.generate(cfg.mac))
   accessory.category = Categories.LIGHTBULB
 
   accessory
