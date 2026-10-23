@@ -19,7 +19,7 @@ OpenBridge.
 ## Requirements
 
 - OpenBridge, any version that supports native platform plugins
-- Node 20 or newer
+- Node 22.23.4 or newer
 - The bridge host and the bulbs on the same subnet, with UDP port 38899
   reachable between them
 
