@@ -1,6 +1,6 @@
 {
   "name": "@nubisco/openbridge-wiz-local-platform",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Control WiZ lights locally over UDP without cloud or broadcast discovery",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
