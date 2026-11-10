@@ -51,6 +51,9 @@ export default defineConfig({
   description: 'Control WiZ lights locally over UDP through OpenBridge and Apple HomeKit.',
 
   base: '/openbridge-wiz-local-platform/',
+  // One address per page: /page, never also /page.html. Links, search and
+  // the sitemap use the clean form, and the gateway 301s the .html one.
+  cleanUrls: true,
 
   head: [
     ['link', { rel: 'icon', href: '/openbridge-wiz-local-platform/favicon.ico' }],
