@@ -1,4 +1,7 @@
-# Credits
+---
+layout: nubisco
+title: 'Credits'
+---
 
 ## Standing on other people's work
 

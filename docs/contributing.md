@@ -1,4 +1,7 @@
-# Contributing
+---
+layout: nubisco
+title: 'Contributing'
+---
 
 ## Getting set up
 

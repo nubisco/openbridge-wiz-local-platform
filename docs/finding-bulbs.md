@@ -1,7 +1,8 @@
-# Finding your bulbs
-
-Each bulb needs three things in configuration: its MAC address, its current IP,
-and a name. The first two come from the bulb itself.
+---
+layout: nubisco
+title: 'Finding your bulbs'
+intro: 'Each bulb needs three things in configuration: its MAC address, its current IP, and a name. The first two come from the bulb itself.'
+---
 
 ## Ask a bulb directly
 

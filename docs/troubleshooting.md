@@ -1,4 +1,7 @@
-# Troubleshooting
+---
+layout: nubisco
+title: 'Troubleshooting'
+---
 
 ## A bulb shows as not responding
 

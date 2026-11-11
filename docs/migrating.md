@@ -1,4 +1,7 @@
-# Migrating from homebridge-wiz-lan
+---
+layout: nubisco
+title: 'Migrating from homebridge-wiz-lan'
+---
 
 ## Your bulbs keep their HomeKit identity
 

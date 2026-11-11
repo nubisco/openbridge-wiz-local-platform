@@ -1,9 +1,8 @@
-# Introduction
-
-This plugin controls [WiZ](https://www.wizconnected.com/) lights from
-[OpenBridge](https://github.com/nubisco/openbridge), talking to each bulb
-directly over your own network. There is no cloud service in the path and no
-WiZ account involved.
+---
+layout: nubisco
+title: 'Introduction'
+intro: 'This plugin controls [WiZ](https://www.wizconnected.com/) lights from [OpenBridge](https://github.com/nubisco/openbridge), talking to each bulb directly over your own network. There is no cloud service in the path and no WiZ account involved.'
+---
 
 ## Why not just use homebridge-wiz-lan?
 

@@ -1,7 +1,8 @@
-# How it works
-
-Useful when something is behaving oddly and you want to know what the plugin is
-actually doing.
+---
+layout: nubisco
+title: 'How it works'
+intro: 'Useful when something is behaving oddly and you want to know what the plugin is actually doing.'
+---
 
 ## The protocol
 
