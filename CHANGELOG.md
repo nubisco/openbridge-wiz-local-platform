@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/nubisco/openbridge-wiz-local-platform/compare/v2.0.0...v2.0.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* the package says it is by Nubisco, like the plugin card ([#4](https://github.com/nubisco/openbridge-wiz-local-platform/issues/4)) ([aab5415](https://github.com/nubisco/openbridge-wiz-local-platform/commit/aab5415c785d84ad3798c7d4bf5984a36ce35238))
+
 # [2.0.0](https://github.com/nubisco/openbridge-wiz-local-platform/compare/v1.0.0...v2.0.0) (2026-10-23)
 
 
