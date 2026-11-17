@@ -69,7 +69,7 @@ const plugin = definePlugin({
     name: PLUGIN_NAME,
     version: PLUGIN_VERSION,
     description: 'Control WiZ lights locally over UDP, without cloud or broadcast discovery',
-    author: 'José Silva',
+    author: 'Nubisco',
   },
 
   async setup(ctx: PluginContext) {
